@@ -1,0 +1,60 @@
+---
+
+- hosts: MyLocalVMs         # specified in the MyInventory file
+  remote_user:  ubuntu      # note that the user is ubuntu for the vagrant-created VM
+  become: yes
+  gather_facts: no
+
+  tasks:
+  - name: Installing Python packages
+    apt:
+      name: "{{ item }}"
+      update_cache: yes      
+    with_items:
+      - build-essential
+      - libssl-dev
+      - libffi-dev
+      - python-dev
+      - python-setuptools
+      - python-pip
+   
+  - name: Install various libraries with pip
+    pip: 
+      name: "{{ item }}"
+    with_items:
+      - python-novaclient
+      - python-openstackclient
+      - netifaces
+      - shade
+  
+  - name: Modifying permissions for pem file
+    raw: chmod 600 /home/ubuntu/.ssh/anurag_cloud.pem
+  
+  
+  - name: Launch an Ubuntu server
+    os_server:
+      auth:
+        auth_url: https://keystone.isis.vanderbilt.edu:5000/v2.0
+        username: kumaa11
+        password: 12345a
+        project_name: Cloud Class
+
+      # VM details
+      name: Task11_ansible_rm
+      image: ubuntu-14.04
+      key_name: anurag_cloud
+      flavor: m1.small
+      security_groups: default
+      nics:
+         - net-id: b16b0244-e1b5-4d36-90ff-83a0d87d8682
+      floating_ips:
+        - 129.59.107.83
+      
+      wait: yes
+      timeout: 1000
+  
+     
+- include: playbook_remote.yml
+     
+...
+

@@ -1,0 +1,5 @@
+[MyLocalVMs]
+127.0.0.1  ansible_connection=local
+
+[MyHorizonVMs]
+129.59.107.83 ansible_connection=ssh ansible_user=ubuntu
